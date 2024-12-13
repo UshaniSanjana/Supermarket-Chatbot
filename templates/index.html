@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EDEN Supermarket Chatbot</title>
+    <style>
+      body {
+        background-color: #f0f0f0; /* Set a light gray background color */
+        font-family: Arial, sans-serif; /* Optional: Set a default font */
+      }
+
+      .chatbot-container {
+        background-color: #4caf50; /* Set green background color */
+        color: white; /* Set text color to white */
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 600px; /* Adjust width as needed */
+        margin: 20px auto; /* Center the container */
+        text-align: center; /* Center align content */
+      }
+
+      .chat-input {
+        width: calc(100% - 80px); /* Adjust input width */
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+        box-sizing: border-box; /* Ensure padding is included in input width */
+      }
+
+      .chat-button {
+        background-color: #45a049; /* Darker green for button */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+    <script>
+      async function getShelfLocation() {
+        const inputText = document.getElementById("inputText").value;
+        const response = await fetch("/get-shelf-location", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input_text: inputText }),
+        });
+        const data = await response.json();
+        document.getElementById("result").innerText = JSON.stringify(
+          data.locations,
+          null,
+          2
+        );
+        if (data.pdf_url) {
+          const pdfLink = document.createElement("a");
+          pdfLink.href = data.pdf_url;
+          pdfLink.textContent = "Download Shelf Locations (PDF)";
+          document.body.appendChild(pdfLink);
+          document.body.appendChild(document.createElement("br"));
+        }
+        if (data.message) {
+          alert(data.message);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="chatbot-container">
+      <h1>Eden Supermarket Chatbot</h1>
+      <label for="inputText">Enter your request:</label>
+      <input type="text" id="inputText" name="inputText" class="chat-input" />
+      <button onclick="getShelfLocation()" class="chat-button">
+        Get Shelf Location
+      </button>
+      <pre id="result"></pre>
+      <!-- Container for displaying JSON response -->
+    </div>
+  </body>
+</html>
